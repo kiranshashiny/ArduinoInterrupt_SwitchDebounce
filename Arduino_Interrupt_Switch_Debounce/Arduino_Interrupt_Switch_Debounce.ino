@@ -14,7 +14,10 @@
  * Open the Serial monitor and look for the ouput of mint ( minute )
  * 
  * Incidentally only pin 1 and 2 of the Arduino Uno can identify the "Interrupts".
+
+ * Another interesting blog but using an Arduino Nano is :
  * 
+ * http://www.martyncurrey.com/switching-things-on-and-off-with-an-arduino/
  */
 
 const int buttonPin = 2;     // the number of the pushbutton pin
