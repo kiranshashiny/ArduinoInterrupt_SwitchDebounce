@@ -14,14 +14,20 @@
  * Open the Serial monitor and look for the ouput of mint ( minute )
  * 
  * Incidentally only pin 1 and 2 of the Arduino Uno can identify the "Interrupts".
+ * Another interesting blog but using an Arduino Nano is :
  * 
+ * http://www.martyncurrey.com/switching-things-on-and-off-with-an-arduino/
  */
 
 const int buttonPin = 2;     // the number of the pushbutton pin
+const int hrPin     = 3;
 
 // variables will change:
 volatile int buttonState = 0;         // variable for reading the pushbutton status
 int mint=0;
+int hr =0;
+int secs =0;
+
 int counter = 0;       // how many times we have seen new value
 int reading;           // the current value read from the input pin
 int current_state = LOW;    // the debounced input value
@@ -30,30 +36,65 @@ int current_state = LOW;    // the debounced input value
 // will quickly become a bigger number than can be stored in an int.
 long time = 0;         // the last time the output pin was sampled
 int debounce_count = 10; // number of millis/samples to consider before declaring a debounced input
+char buf[20];
 
 void setup() {
   // initialize the LED pin as an output:
   // initialize the pushbutton pin as an input:
   pinMode(buttonPin, INPUT);
+  pinMode(hrPin, INPUT);
   // Attach an interrupt to the ISR vector
-  attachInterrupt(0, pin_ISR, CHANGE);
+  //attachInterrupt(0, pin_ISR, CHANGE); // Unreliable ! see below for reliable function call
+  //attachInterrupt(1, hr_ISR,  CHANGE );
+  attachInterrupt(digitalPinToInterrupt(2), min_ISR,CHANGE);  //  function for creating external interrupts at pin2 on Rising (LOW to HIGH)
+  attachInterrupt(digitalPinToInterrupt(3), hr_ISR, CHANGE); 
   Serial.begin(9600);
 }
 
 void loop() {
-  // Nothing here! Some dummy number and the number of times the button is pressed is listed.
-  Serial.print ("Time: 9: ");
-  Serial.println( mint);
+  // Print the Hour and Minutes number of times the button is pressed is listed.
+  Serial.print ("");
+  Serial.print ( hr );
+  Serial.print (" " );
+  Serial.print( mint );
+  Serial.print ( " " );
+  Serial.print (secs );
+  Serial.print (" .  Time now is : " );
+  secs++;
+  if ( secs >59) { secs =0;}
+  sprintf ( buf, "%d:%d:%d", hr, mint, secs );
+  Serial.println ( buf );
   delay(1000);
 }
 
-void pin_ISR() {
+
+void hr_ISR() {
+  // If we have gone on to the next millisecond
+  if(HrdebounceButton(buttonState) == HIGH && buttonState == LOW)
+  {
+    buttonState = HIGH;
+    //Serial.println ("Hour Button was pressed");
+    hr++;
+    if ( hr > 23 ) { hr =0; }
+    secs =0; // reset secs to 0.
+    
+  }
+  else if(HrdebounceButton(buttonState) == LOW && buttonState == HIGH)
+  {
+       buttonState = LOW;
+  }
+  
+}
+
+void min_ISR() {
   // If we have gone on to the next millisecond
   if(debounceButton(buttonState) == HIGH && buttonState == LOW)
   {
     buttonState = HIGH;
-    Serial.println ("High");
+    //Serial.println ("Min is High ");
     mint++;
+    if ( mint >59) { mint = 0; }
+    secs =0; // reset secs to 0;
     
   }
   else if(debounceButton(buttonState) == LOW && buttonState == HIGH)
@@ -72,5 +113,13 @@ boolean debounceButton(boolean state)
   }
   return stateNow;  
 }
-
-
+boolean HrdebounceButton(boolean state)
+{
+  boolean stateNow = digitalRead(hrPin);
+  if(state!=stateNow)
+  {
+    delay(10);
+    stateNow = digitalRead(hrPin);
+  }
+  return stateNow;  
+}
