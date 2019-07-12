@@ -2,6 +2,13 @@
  * Code which looks at Interrupts when push button is pressed when connected to the Arduino Uno, 
  * and also handles debouncing of the tactile switch.
  * 
+ * Arduino Uno and other variants recognize the interrupts when an user presses certain buttons
+ * On an Uno it is Pin 2 and 3
+ * An a Nano it is D2 and D3
+ * The examples here were done on an Uno.
+ *
+ * The button switch is connected to Arduino using the diagram in this link.
+ * https://www.arduino.cc/en/tutorial/button
  *
  * Interrupts example was taken from 
  * https://www.allaboutcircuits.com/technical-articles/using-interrupts-on-arduino/
@@ -10,6 +17,10 @@
  * https://educ8s.tv/arduino-button-debounce-tutorial/
  * 
  * Here, this example shows incrementing a simple counter each time the button is pressed.
+ * One of the button is used to increment the Hour, and another button to increment Minute.
+ * Each time one of the button is set, the 'seconds' timer is reset back to 0.
+ * The Hour counter is set to go from 1...23 and resets to 0.
+ * The minute counter is set to go from 1...59 and resets to 0.
  * 
  * Open the Serial monitor and look for the ouput of mint ( minute )
  * 
