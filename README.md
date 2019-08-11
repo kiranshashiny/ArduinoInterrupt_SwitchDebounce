@@ -28,3 +28,20 @@ For now the display is on Serial Monitor.
 
 ![Screen Shot 2019-07-12 at 4 47 37 PM](https://user-images.githubusercontent.com/14288989/61124558-c9efec00-a4c4-11e9-92d1-f60a1f84bca5.png)
 
+
+
+
+
+Other form of trapping bounce situation, is in https://forum.arduino.cc/index.php?topic=417406.0
+
+		void debounceISR()
+		{
+		  static unsigned long last_interrupt_time = 0;
+		  unsigned long interrupt_time = millis();
+		  if (interrupt_time - last_interrupt_time > debounceInterval) //declare the debounce/block out interval in setup
+		  {
+		    //ISR code to execute)
+		  }
+		  last_interrupt_time = interrupt_time;
+		
+		}
